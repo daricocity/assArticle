@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+        <style>
+            body {background: #f5f5f5;}
+
+            h1 {
+                text-align: center;
+                font-family: arial;
+                color: #5a5a5a;
+            }
+
+            ul {
+                display: flex;
+                list-style:none;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                justify-content:center;
+                flex-basis: 80%;
+            }
+
+            li {
+                flex-basis: 20%;
+                display:flex;
+                flex-direction: column;
+                margin-bottom: 20px;
+                align-items:center;
+            }
+            span {
+                font-family: arial;
+                font-size: 14px;
+                color: #5a5a5a;
+                text-align: center;
+            }
+
+            img {
+                margin: 5px;
+                border-radius: 3px;
+                box-shadow: 1px 1px 3px rgba(0,0,0,0.2); 
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="">
+            <h1>Create Article</h1>
+            <form id="postData">
+                <p><label for="author_name">Author:</label>
+                <input type="text" name="author_name" id="aname"></p>
+
+                <p><label for="title">Title:</label>
+                <input type="text" name="title" id="title"></p>
+
+                <input type="submit" value="Create" onclick="postData()">
+            </form>
+
+        </div>
+
+        <div class="mypanel">
+            <h1>Article List</h1>
+            <ul id="authors"></ul>
+            <div id="errormsg"></div>
+        </div>
+
+
+        <script>
+
+            // Add Article
+            //POST Request with body and options
+
+
+            postData(`http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article`, {author: 'John', title: 'Golden topic'})
+              .then(data => console.log(JSON.stringify(data)))
+              .catch(error => console.error(error));
+
+            function postData(url = ``, data = {}) {
+                return fetch(url, {
+                    method: "POST",
+                    mode: "cors",
+                    cache: "no-cache", 
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    redirect: "follow",
+                    referrer: "no-referrer",
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json()); // parses response to JSON
+            }
+
+
+            function createNode(element) {
+                return document.createElement(element);
+            }
+
+            function append(parent, el) {
+                return parent.appendChild(el);
+            }
+
+            const ul = document.getElementById('authors');
+            const errormsg = document.getElementById('errormsg');
+            const geturl = 'http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article';
+            fetch(geturl)
+                .then(res => res.json())
+                .then((datas) => {
+                    console.log('Output: ', datas);
+                    let datalist = datas; // Get the results
+                    return datalist.map(function(data) { // Map through the results and for each run the code below
+                        let li = createNode('li'), //  Create the elements we need
+                            img = createNode('img'),
+                            span = createNode('span');
+                            p = createNode('p');
+                            h4 = createNode('h4');
+                        img.src = data.avatar;  // Add the source of the image to be the src of the img element
+                        h4.innerHTML = `Author: ${data.author}`; // Make the HTML of span to be the author name
+                        p.innerHTML = `Title: ${data.title}`; // Make the HTML of span to be the author name
+                        append(li, img); // Append all our elements
+                        append(li, span);
+                        append(li, h4);
+                        append(li, p);
+                        append(ul, li);
+                    })
+                })
+                .catch(err => {
+                    p = createNode('p');
+                    p.innerHTML = `Error: ${err}`;
+                    append(errormsg, p)
+                });
+
+
+                 // const dataToSend = JSON.stringify({"author": "Anthony", "title": "Goldent boot", "avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/foczzi/128.jpg","url":"http://annabell.org"});
+            // let dataRecieved=""; 
+            // fetch(posturl,{mode: 'cors',method:"post",body:dataToSend})
+            //     .then(resp => {
+            //         if(resp.status==200){
+            //            return resp.json()
+            //            console.log("Success: "+resp.status);
+            //         }else{
+            //             console.log("Error: "+'resp.status');
+            //             return Promise.reject("server")
+            //         }
+            //     })
+            //    .then(dataJson =>{
+            //          dataToRecieved = JSON.parse(dataJson);
+            //      })
+            //       .catch(err =>{
+            //         if(err=="server")return
+            //         console.log(err);
+            // })
+        </script>
+    </body>
+</html>
