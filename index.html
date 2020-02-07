@@ -52,7 +52,7 @@
                 <p><label for="title">Title:</label>
                 <input type="text" name="title" id="title"></p>
 
-                <input type="submit" value="Create" onclick="postData()">
+                <input type="submit" value="Create" id="submit">
             </form>
 
         </div>
@@ -67,15 +67,15 @@
         <script>
 
             // Add Article
-            //POST Request with body and options
+            const postUrl = `http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article`;
+            const submitBtn = document.querySelector('#submit');
+            submitBtn.addEventListener('click', postData);
 
-
-            postData(`http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article`, {author: 'John', title: 'Golden topic'})
-              .then(data => console.log(JSON.stringify(data)))
-              .catch(error => console.error(error));
-
-            function postData(url = ``, data = {}) {
-                return fetch(url, {
+            function postData(e) {
+                e.preventDefault();
+                const aname = document.querySelector('#aname').value;
+                const title = document.querySelector('#title').value;
+                fetch(postUrl, {
                     method: "POST",
                     mode: "cors",
                     cache: "no-cache", 
@@ -85,12 +85,12 @@
                     },
                     redirect: "follow",
                     referrer: "no-referrer",
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({author:aname, title:title})
                 })
-                .then(response => response.json()); // parses response to JSON
             }
 
 
+            // Get All Articles    
             function createNode(element) {
                 return document.createElement(element);
             }
@@ -101,8 +101,8 @@
 
             const ul = document.getElementById('authors');
             const errormsg = document.getElementById('errormsg');
-            const geturl = 'http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article';
-            fetch(geturl)
+            const getUrl = 'http://5e0df4b536b80000143db9ca.mockapi.io/etranzact/v1/article';
+            fetch(getUrl)
                 .then(res => res.json())
                 .then((datas) => {
                     console.log('Output: ', datas);
@@ -113,11 +113,14 @@
                             span = createNode('span');
                             p = createNode('p');
                             h4 = createNode('h4');
+                            a = createNode('a')
+                            a.setAttribute('href', getUrl+'/'+`${data.id}`);
                         img.src = data.avatar;  // Add the source of the image to be the src of the img element
-                        h4.innerHTML = `Author: ${data.author}`; // Make the HTML of span to be the author name
+                        a.innerHTML = `Author: ${data.author}`; // Make the HTML of span to be the author name
                         p.innerHTML = `Title: ${data.title}`; // Make the HTML of span to be the author name
                         append(li, img); // Append all our elements
                         append(li, span);
+                        append(h4, a);
                         append(li, h4);
                         append(li, p);
                         append(ul, li);
@@ -129,26 +132,6 @@
                     append(errormsg, p)
                 });
 
-
-                 // const dataToSend = JSON.stringify({"author": "Anthony", "title": "Goldent boot", "avatar":"https://s3.amazonaws.com/uifaces/faces/twitter/foczzi/128.jpg","url":"http://annabell.org"});
-            // let dataRecieved=""; 
-            // fetch(posturl,{mode: 'cors',method:"post",body:dataToSend})
-            //     .then(resp => {
-            //         if(resp.status==200){
-            //            return resp.json()
-            //            console.log("Success: "+resp.status);
-            //         }else{
-            //             console.log("Error: "+'resp.status');
-            //             return Promise.reject("server")
-            //         }
-            //     })
-            //    .then(dataJson =>{
-            //          dataToRecieved = JSON.parse(dataJson);
-            //      })
-            //       .catch(err =>{
-            //         if(err=="server")return
-            //         console.log(err);
-            // })
         </script>
     </body>
 </html>
